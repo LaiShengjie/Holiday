@@ -54,7 +54,55 @@ panel <- function(mat1, region, col, wk, panel.name){
   region$adm[region$y == min.y] <- 'S'
   axis(2, at=region$order, labels=region$adm, las=1, cex.axis=1.3)
 
-  title(xlab='Week', cex.lab=1.2)
+  title(xlab='Month and week', cex.lab=1.2)
+  mtext(paste(panel.name),side=3,line=0.1, adj=0, cex=1.3)
+}
+
+panel.world <- function(mat1, region, col, wk, panel.name){
+  image(x=seq(1,nrow(mat1)), z=mat1, col=col, yaxt="n",xaxt="n",xlab="")
+  box()
+  x= (nrow(mat1)+1)/365
+  abline(v=c(x*91, x*182, x*274), lty =2,)
+  
+  v=c((1-3*x), x*32, x*60, x*91, x*121, x*152, x*182, x*213, x*244, x*274, x*305, x*335, (53+3*x))
+  axis(1, at=v, labels= c('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D', 'J'))
+
+  region$order <- seq(0,1,,dim(region)[1])
+  
+  ## add North and South
+  region$y <- round(region$y,5)
+  max.y <- max(region$y)
+  min.y <- min(region$y)
+  region$order[! region$y %in% c(max.y, min.y)] <- NA
+  region$adm[region$y == max.y] <- 'N'
+  region$adm[region$y == min.y] <- 'S'
+  axis(2, at=region$order, labels=region$adm, las=1, cex.axis=1.3)
+  
+  title(xlab='Month and week', cex.lab=1.2)
+  mtext(paste(panel.name),side=3,line=0.1, adj=0, cex=1.3)
+}
+
+# heatmap panel function - selected countries
+panel.iso <- function(mat1, region, col, wk, panel.name){
+  image(x=seq(1,nrow(mat1)), z=mat1, col=col, yaxt="n",xaxt="n",xlab="")
+  box()
+  x= (nrow(mat1)+1)/365
+  abline(v=c(x*91, x*182, x*274), lty =2,)
+  
+  v=c((1-3*x), x*32, x*60, x*91, x*121, x*152, x*182, x*213, x*244, x*274, x*305, x*335, (53+3*x))
+  axis(1, at=v, labels= c('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D', 'J'))
+  region$order <- seq(0,1,,dim(region)[1])
+  
+  # ## add North and South
+  # region$y <- round(region$y,5)
+  # max.y <- max(region$y)
+  # min.y <- min(region$y)
+  # region$order[! region$y %in% c(max.y, min.y)] <- NA
+  # region$adm[region$y == max.y] <- 'N'
+  # region$adm[region$y == min.y] <- 'S'
+  axis(2, at=region$order, labels=region$adm, las=1, cex.axis=1.3)
+  
+  title(xlab='Month and week', cex.lab=1.2)
   mtext(paste(panel.name),side=3,line=0.1, adj=0, cex=1.3)
 }
 
@@ -167,6 +215,7 @@ panel.legend.wk1.air <- function(mat1, col, breaks){
 panel.legend.air.hol <- function(mat1, col, breaks){
   image.scale(mat1, col=col, breaks=breaks, horiz=FALSE, yaxt="n", xaxt="n", xlab="", ylab="")
   axis(4,at = c(min(breaks)+0.5, max(breaks)-0.5), 
-       labels = c('Low', 'High'), cex.axis=1.1, las=2)
+       labels = c('0', '1'),
+       cex.axis=1.1, las=2)
   box()
 }

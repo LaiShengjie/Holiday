@@ -16,7 +16,7 @@ library(sf)
 library(grid) # multipanel plots
 library(gridExtra) #multipanel plots
 
-setwd("D:/OneDrive - University of Southampton/Seasonality Project/Scientific_Data_Holidays")
+setwd("C:/Users/sl4m18/OneDrive - University of Southampton/Seasonality Project/Scientific_Data_Holidays")
 
 ### Holiday Heatmap plots ----------
 # data aggregation and plot function
@@ -63,7 +63,7 @@ mat2[mat2 >= 1] <- 1
 
 # plot
 par(mar=c(4,3,2,1),xpd=F)
-panel.month(mat2, region, col1, paste('A Public and school holidays', sep = ''))
+panel.month(mat2, region, col1, paste('a', sep = ''))
 
 # legend
 par(mar=c(50,0,2,4.5))
@@ -73,7 +73,7 @@ panel.legend.wk2(mat2, col1, breaks)
 ## Panel: B
 # plot
 par(mar=c(4,3,2,1),xpd=F)
-panel.month(mat1, region, col, paste('B Public and school holidays', sep = ''))
+panel.month(mat1, region, col, paste('b', sep = ''))
 
 # legend
 par(mar=c(25,0,2,4.5))
@@ -83,7 +83,7 @@ panel.legend.wk1(mat1, col, breaks)
 dev.off()
 
 ### ~~ week -------- 
-## only public holidays
+## ~~~~ only public holidays ----
 pdf('Figures/Heatmaps_Public holiday_week_world.pdf', width=11, height=5)
 layout(matrix(c(1,2,3,4), nrow=1, ncol=4), widths=c(5,1,5,1), heights=c(2.5))
 
@@ -136,7 +136,7 @@ for(i in 2010:2019){
 }
 dev.off()
 
-## public and school holidays
+## ~~~~ public and school holidays ----
 pdf('Figures/Heatmaps_Public and School holiday_week_world.pdf', width=11, height=5)
 # windows(width=11, height=8, bg="white")
 layout(matrix(c(1,2,3,4), nrow=1, ncol=4), widths=c(5,1,5,1), heights=c(2.5))
@@ -191,7 +191,7 @@ for(i in 2010:2019){
 }
 dev.off()
 
-######## One figure with 2010 and 2019 data
+######## ~~~~ One figure with 2010 and 2019 data ----
 pdf('Figures/Heatmaps_Public and School holiday_week_world_2010and2019.pdf', width=11, height=10)
 layout(matrix(c(1,2,3,4,5,6,7,8), nrow=2, ncol=4, byrow = T), widths=c(5,1,5,1), heights=c(2.5,2.5))
 
@@ -315,8 +315,136 @@ panel.legend.wk1(mat1, col, breaks)
 
 dev.off()
 
-# Air travel Heatmaps -------
-# air travel data
+######## ~~~~ One figure for selected countries with 2010 and 2019 data ----
+pdf('Figures/Heatmaps_Public and School holiday_week_world_continent_2010and2019.pdf', width=13, height=10)
+layout(matrix(c(1,2,3,4,5,6,7,8), nrow=2, ncol=4, byrow = T), widths=c(5,1,5,1), heights=c(2.5,2.5))
+
+# colour
+n <- 8
+col <- viridis::viridis(n)[n:1]
+
+### 2010
+i=2010
+#### pubic and school holidays
+dat <- ts.week[ts.week$Year == i,]
+mat1 <- dat[order(dat$lat, dat$ISO3, dat$Week),]
+mat1 <- mat1[,c('lat','Week','hl_sch')]
+mat1 <- dcast(mat1, Week ~ lat, value.var = 'hl_sch')
+mat1$Week <- NULL 
+mat1 <- as.matrix(mat1)
+mat1[is.na(mat1)] <- 0
+wk <- unique(dat$Week)
+
+region <- dat[, c('ISO3','lat')]
+region <- region[order(region$lat, region$ISO3),]
+region <- unique(region)
+region$adm <- region$ISO3
+region$y <- region$lat
+region$lat <- region$ISO3 <- NULL
+
+## Panel: week, days
+# plot
+par(mar=c(5,8,3,2),xpd=F)
+panel.world(mat1, region, col, wk, paste('a ', i, sep = ''))
+
+# legend
+par(mar=c(15,0,3,5))
+breaks <- 0:8
+panel.legend.wk1(mat1, col, breaks)
+
+#### 2019
+i=2019
+### public and school holidays
+dat <- ts.week[ts.week$Year == i,]
+mat1 <- dat[order(dat$lat, dat$ISO3, dat$Week),]
+mat1 <- mat1[,c('lat','Week','hl_sch')]
+mat1 <- dcast(mat1, Week ~ lat, value.var = 'hl_sch')
+mat1$Week <- NULL 
+mat1 <- as.matrix(mat1)
+mat1[is.na(mat1)] <- 0
+wk <- unique(dat$Week)
+
+region <- dat[, c('ISO3','lat')]
+region <- region[order(region$lat, region$ISO3),]
+region <- unique(region)
+region$adm <- region$ISO3
+region$y <- region$lat
+region$lat <- region$ISO3 <- NULL
+
+## Panel: week, days
+# plot
+par(mar=c(5,8,3,2),xpd=F)
+panel.world(mat1, region, col, wk, paste('b ', i, sep = ''))
+
+# legend
+par(mar=c(15,0,3,5))
+breaks <- 0:8
+panel.legend.wk1(mat1, col, breaks)
+
+### 2010 selected countries
+iso <- read.csv("Holidays/selected countries.csv", header=T, stringsAsFactors=F)
+i=2010
+#### pubic and school holidays
+dat <- ts.week[ts.week$Year == i & ts.week$ISO3 %in% iso$ISO3,]
+mat1 <- dat[order(dat$lat, dat$ISO3, dat$Week),]
+mat1 <- mat1[,c('lat','Week','hl_sch')]
+mat1 <- dcast(mat1, Week ~ lat, value.var = 'hl_sch')
+mat1$Week <- NULL 
+mat1 <- as.matrix(mat1)
+mat1[is.na(mat1)] <- 0
+wk <- unique(dat$Week)
+
+region <- iso[, c('ISO3', 'ADM_name', 'lat')]
+region <- region[order(region$lat, region$ISO3),]
+region <- unique(region)
+region$adm <- region$ADM_name
+region$y <- region$lat
+region$lat <- region$ISO3 <- region$ADM_name <- NULL
+
+## Panel: week, days
+# plot
+par(mar=c(5,8,3,2),xpd=F)
+panel.iso(mat1, region, col, wk, paste('c ', i, sep = ''))
+
+# legend
+par(mar=c(15,0,3,5))
+breaks <- 0:8
+panel.legend.wk1(mat1, col, breaks)
+
+### 2019 selected countries
+iso <- read.csv("Holidays/selected countries.csv", header=T, stringsAsFactors=F)
+i=2019
+#### pubic and school holidays
+dat <- ts.week[ts.week$Year == i & ts.week$ISO3 %in% iso$ISO3,]
+mat1 <- dat[order(dat$lat, dat$ISO3, dat$Week),]
+mat1 <- mat1[,c('lat','Week','hl_sch')]
+mat1 <- dcast(mat1, Week ~ lat, value.var = 'hl_sch')
+mat1$Week <- NULL 
+mat1 <- as.matrix(mat1)
+mat1[is.na(mat1)] <- 0
+wk <- unique(dat$Week)
+
+region <- iso[, c('ISO3', 'ADM_name', 'lat')]
+region <- region[order(region$lat, region$ISO3),]
+region <- unique(region)
+region$adm <- region$ADM_name
+region$y <- region$lat
+region$lat <- region$ISO3 <- region$ADM_name <- NULL
+
+## Panel: week, days
+# plot
+par(mar=c(5,8,3,2),xpd=F)
+panel.iso(mat1, region, col, wk, paste('d ', i, sep = ''))
+
+# legend
+par(mar=c(15,0,3,5))
+breaks <- 0:8
+panel.legend.wk1(mat1, col, breaks)
+
+dev.off()
+
+#### Air travel Heatmaps -------
+## air travel statistic data
 air <- read.csv('Air travel data/All Air Travel data in thousand.csv', stringsAsFactors = F)
 air$Total[is.na(air$Total) == T] <-  air$Total_OS[is.na(air$Total) == T]
 hol.air <- merge(ts.month, air, by=c('ISO3', 'Year', 'Month'), all.x = T)
@@ -559,7 +687,8 @@ for(i in 1:length(mon)){
     theme(legend.position = c(0.1,0.2),
           panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.title=element_blank(), 
           axis.text=element_blank(), axis.ticks=element_blank(), panel.background = element_blank(), 
-          axis.line = element_line(colour = "white"), plot.title = element_text(face = 'bold',size = 20)) +
+          axis.line = element_line(colour = "white"), 
+          plot.title = element_text(face = 'bold', hjust = 0.1, size = 20)) +
     coord_equal(xlim = c(-180, 180) , ylim = c(-55, 90)) 
   
   p[[i]] <- map
@@ -569,24 +698,25 @@ for(i in 1:length(mon)){
 dev.off()
 
 # merge plots
-pdf('Figures/Maps_Holidays_month_world_one.pdf', width=15, height=11)
-g1 <- cbind(ggplotGrob(p[[1]]),
-           ggplotGrob(p[[2]]), 
-           ggplotGrob(p[[3]]), size = 'last')
-g2 <- cbind(ggplotGrob(p[[4]]),
+pdf('Figures/Maps_Holidays_month_world_one.pdf', width=11, height=14)
+g1 <- rbind(ggplotGrob(p[[1]]),
+            ggplotGrob(p[[2]]), 
+            ggplotGrob(p[[3]]), 
+            ggplotGrob(p[[4]]),
             ggplotGrob(p[[5]]), 
             ggplotGrob(p[[6]]), size = 'last')
-g3 <- cbind(ggplotGrob(p[[7]]),
+g2 <- rbind(ggplotGrob(p[[7]]),
             ggplotGrob(p[[8]]), 
-            ggplotGrob(p[[9]]), size = 'last')
-g4 <- cbind(ggplotGrob(p[[10]]),
+            ggplotGrob(p[[9]]),
+            ggplotGrob(p[[10]]),
             ggplotGrob(p[[11]]), 
             ggplotGrob(p[[12]]), size = 'last')
-g <- rbind(g1, g2, g3, g4, size = 'last')
+g <- cbind(g1, g2, size = 'last')
 grid.draw(g)
 dev.off()
 
-### correlation -----
+
+### correlation using air travel statistics -----
 # ~~ detrend and standardized monthly proportion/ranks ----
 dat <- hol.air
 for(i in unique(dat$ISO3)){
@@ -627,6 +757,8 @@ for(i in unique(dat$ISO3)){
 
 dat$hl_group <- cut(dat$hl_sch, breaks=c(0, 4, 8, 15, 22, Inf),
                     labels=c("0-3","4-7","8-14", '15-21', '22-31'),right = F,order=TRUE)
+ggplot(data=dat, aes(x=hl_sch, y=Total)) + 
+  geom_point() + theme_classic()
 
 ggplot(data=dat, aes(x=as.factor(hl_sch), y=Total)) + 
   geom_boxplot() + theme_classic()
@@ -653,7 +785,7 @@ dt <- as.matrix(dt)
 dt <- dt/rowSums(dt)
 ## plot A
 par(mar=c(4,6,3,1),xpd=F)
-panel.month.air.hol(dt, col, paste('A Total', sep = ''))
+panel.month.air.hol(dt, col, paste('a Total', sep = ''))
 
 ## holidays vs domestic travel
 df <- dat[is.na(dat$Domestic) == F,]
@@ -667,7 +799,7 @@ dt <- as.matrix(dt)
 dt <- dt/rowSums(dt)
 ## plot B
 par(mar=c(4,6,3,1),xpd=F)
-panel.month.air.hol(dt, col, paste('B Domestic', sep = ''))
+panel.month.air.hol(dt, col, paste('b Domestic', sep = ''))
 
 ## holidays vs international travel
 df <- dat[is.na(dat$International) == F,]
@@ -681,11 +813,77 @@ dt <- as.matrix(dt)
 dt <- dt/rowSums(dt)
 ## plot C
 par(mar=c(4,6,3,1),xpd=F)
-panel.month.air.hol(dt, col, paste('C International', sep = ''))
+panel.month.air.hol(dt, col, paste('c International', sep = ''))
 
 # legend
 par(mar=c(35,0,3,4.5))
 breaks <- 1:(n+1)
 panel.legend.air.hol(dt, col, breaks)
+
+dev.off()
+
+
+### Worldpop data - correlation using air travel in 2010 -----
+## 2010 air travel flow data estimated by Worldpop
+airwp <- read.csv('Air travel data/Worldpop_air travel data in thousand in 2010.csv', stringsAsFactors = F)
+hol.airwp <- hol.air[,c("ISO3", "Year", "Month", "ADM_name", "holiday", "hl_sch", "lat")]
+hol.airwp <- merge(hol.airwp, airwp, by=c('ISO3', 'Year', 'Month'))
+hol.airwp <- hol.airwp[order(hol.airwp$lat, hol.airwp$ISO3, hol.airwp$Year, hol.airwp$Month),]
+
+# ~~ detrend and standardized monthly proportion/ranks ----
+dat <- hol.airwp
+for(i in unique(dat$ISO3)){
+  df <- dat[dat$ISO3 == i,]
+  for(y in unique(dat$Year)){
+    df1 <- df[df$ISO3 == i & df$Year == y,]
+    # Total
+    if(is.na(sum(df1$Total))==T | min(df1$Total) == 0 ){
+      dat$Total[dat$ISO3 == i & dat$Year == y] <- NA
+    }else{
+      # by proporttion
+      # dat$Total[dat$ISO3 == i & dat$Year == y] <- dat$Total[dat$ISO3 == i & dat$Year == y]/sum(df1$Total)
+      # by rank
+      dat$Total[dat$ISO3 == i & dat$Year == y] <- rank(df1$Total,ties.method= "min")
+    }
+    
+    # Domestic
+    if(is.na(sum(df1$Domestic))==T | min(df1$Domestic) == 0 ){
+      dat$Domestic[dat$ISO3 == i & dat$Year == y] <- NA
+    }else{
+      # by proporttion
+      # dat$Domestic[dat$ISO3 == i & dat$Year == y] <- dat$Domestic[dat$ISO3 == i & dat$Year == y]/sum(df1$Domestic)
+      # by rank
+      dat$Domestic[dat$ISO3 == i & dat$Year == y] <- rank(df1$Domestic,ties.method= "min")
+    }
+    
+    # International
+    if(is.na(sum(df1$International))==T | min(df1$International) == 0 ){
+      dat$International[dat$ISO3 == i & dat$Year == y] <- NA
+    }else{
+      # by proporttion
+      # dat$International[dat$ISO3 == i & dat$Year == y] <- dat$International[dat$ISO3 == i & dat$Year == y]/sum(df1$International)
+      # by rank
+      dat$International[dat$ISO3 == i & dat$Year == y] <- rank(df1$International,ties.method= "min")
+    }
+  }
+}
+
+dat$hl_group <- cut(dat$hl_sch, breaks=c(0, 4, 8, 15, 22, Inf),
+                    labels=c("0-3","4-7","8-14", '15-21', '22-31'),right = F,order=TRUE)
+
+### ~~ holiday vs travel plot ----
+pdf('Figures/Boxplot_Holiday vs Air Travel 2010_wp_std.pdf', width=7, height=5)
+ggplot(data=dat, aes(x=hl_group, y=Total)) + 
+  geom_boxplot() +  scale_y_continuous(breaks=c(1, 2, 3, 4, 5,6, 7,8, 9,10, 11, 12))+
+  xlab('Holiday (days)') + ylab('Air travel (rank)') +
+  # labs(title = paste('A'), x='', y = 'No of exported cases', colour='') +
+  theme_bw() + theme(panel.grid.minor = element_blank(), 
+                     panel.grid.major = element_blank())  +
+  theme(legend.position=c(0.2,0.8), legend.background = element_blank())+
+  theme( axis.text  = element_text(size=13,colour = 'black'), 
+         axis.title = element_text(size = 15),
+         title = element_text(size=15),
+         legend.title = element_text(size = 12),
+         legend.text = element_text(size=12))
 
 dev.off()
