@@ -1,5 +1,5 @@
 # Holiday
-Global holiday datasets for understanding seasonal mobility and infectious disease dynamics
+Global holiday datasets for understanding seasonal human mobility and population dynamics
 
 This study aims to overcome the data gap identified above by producing global scale, time-series datasets of public and school holidays across countries and multiple years. As such, under the framework of the WorldPop program and the seasonality projects, an open access archive of comprehensive datasets of public and school holidays across the world at daily, weekly, and monthly basis has been created. These time series are also compared against the actual volume of airline passengers by month assembled in this study to illustrate the usage of holiday datasets for understanding seasonal patterns of human mobility. All products are available through WorldPop website (https://www.worldpop.org/).
 
